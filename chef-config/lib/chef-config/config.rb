@@ -71,8 +71,8 @@ module ChefConfig
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
         drive = windows_installation_drive
-        if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(drive, path.split('\\', 3)[2])
+        if drive && path[0] == "\\" && path.split("\\")[2] == "chef"
+          path = PathHelper.join(drive, path.split("\\", 3)[2])
         end
       end
       path
@@ -392,8 +392,20 @@ module ChefConfig
     # Where chef's cache files should be stored
     default(:file_cache_path) { PathHelper.join(cache_path, "cache") }.writes_value { |path| expand_relative_paths(path) }
 
+    # Where chef's cache files should be stored, used for bootstrap on unix filesystems
+    default(:unix_bootstrap_file_cache_path) { PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, "cache", windows: false) }
+
+    # Where chef's cache files should be stored, used for bootstrap on windows filesystems
+    default(:windows_bootstrap_file_cache_path) { PathHelper.join("C:", ChefUtils::Dist::Infra::DIR_SUFFIX, "cache", windows: true) }
+
     # Where backups of chef-managed files should go
     default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
+
+    # Where chef's backup files should be stored, used for bootstrap on unix filesystems
+    default(:unix_bootstrap_file_backup_path) { PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, "backup", windows: false) }
+
+    # Where chef's backup files should be stored, used for bootstrap on windows filesystems
+    default(:windows_bootstrap_file_backup_path) { PathHelper.join("C:", ChefUtils::Dist::Infra::DIR_SUFFIX, "backup", windows: true) }
 
     # The chef-client (or solo) lockfile.
     #
@@ -1007,7 +1019,7 @@ module ChefConfig
     default :blocked_normal_attributes, nil
     default :blocked_override_attributes, nil
 
-    # deprecated config options that will be removed in Chef Infra Client 17
+    # deprecated config options that will be removed in Chef Infra Client 18
     default :automatic_attribute_blacklist, nil
     default :default_attribute_blacklist, nil
     default :normal_attribute_blacklist, nil
